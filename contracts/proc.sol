@@ -11,7 +11,6 @@ contract procurement {
         string[] validity;
     }
     
-   // supplier_details[] public suppliers;
     
     struct Client {
         string name;
@@ -20,27 +19,39 @@ contract procurement {
         string requirements;
         string date;
         string delivery_period;
-        string supplier;
-        mapping(string => Supplier_details) suppliers;
+        uint8 job;
+        mapping(uint8 => Supplier_details) suppliers;
     }
     
     mapping(address => Client) public transaction;
     
-    function addTransaction(string memory _name, string memory _productType, string memory _product, string memory _req, string memory _date, string memory _del) public {
+    function addTransaction(string memory _name, string memory _productType, string memory _product, string memory _req, string memory _date, string memory _del, uint8 _job) public {
        
         Client storage client = transaction[msg.sender];
         client.name = _name;
         client.product_type = _productType;
         client.product = _product;
         client.requirements = _req;
-        client.date = _date;
+        client.date = _date;                
         client.delivery_period = _del;
+        client.job = _job;
     }
     
-    function addSuppliers(string memory _sup, string[] memory _supNm, string[] memory _zimraITF263, string[] memory _praz, string[] memory _validity) public {
+    function addSuppliers(uint8 _job,string[] memory _supNm, string[] memory _zimraITF263, string[] memory _praz, string[] memory _validity) public {
         Client storage client = transaction[msg.sender];
-        client.suppliers[_sup] = Supplier_details({name: _supNm, zimraITF263: _zimraITF263, praz: _praz, validity: _validity});
+        client.suppliers[_job] = Supplier_details({name: _supNm, zimraITF263: _zimraITF263, praz: _praz, validity: _validity});
         
+    }
+    
+    function getTransactions(address _address) view public returns(string memory, string memory, string memory, string memory, string memory, string memory,uint8) {
+        Client storage client = transaction[_address];
+        return (client.name, client.product_type, client.product, client.requirements, client.date, client.delivery_period, client.job);
+    }
+    
+    function getSuppliers(address _address, uint8 _job) view public returns(string[] memory, string[] memory, string[] memory, string[] memory) {
+        Client storage client = transaction[_address];
+        
+        return (client.suppliers[_job].name, client.suppliers[_job].zimraITF263, client.suppliers[_job].praz, client.suppliers[_job].validity);
     }
     
     
